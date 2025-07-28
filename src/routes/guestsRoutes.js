@@ -7,6 +7,7 @@ import {
   getGuestByEmail,
   updateGuest,
 } from "../controllers/guestsController.js";
+import { protect } from "../middlewares/protect.js";
 
 const router = express.Router();
 
@@ -18,10 +19,10 @@ router.get("/:email", getGuestByEmail);
 router.post("/create", createGuest);
 
 // PATCH (UPDATE)
-router.patch("/update/:guestId", updateGuest);
+router.patch("/update/:guestId", protect, updateGuest);
 
 // DELETE
-router.delete("/delete/all", deleteAllGuests);
-router.delete("/delete/:guestId", deleteGuestById);
+router.delete("/delete/all", protect, deleteAllGuests);
+router.delete("/delete/:guestId", protect, deleteGuestById);
 
 export default router;

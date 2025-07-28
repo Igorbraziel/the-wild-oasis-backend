@@ -17,17 +17,36 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 8000;
 
+const whitelist = [
+  process.env.FRONTEND_DEVELOPMENT_URL,
+  process.env.FRONTEND_PRODUCTION_URL,
+];
+
 //Middleware
-app.use(cors({
-  origin: ""
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // The 'origin' is the URL of the site making the request (your Next.js app)
+      // Allow requests with no origin (like mobile apps or curl requests) in dev,
+      // but you might want to block them in production.
+      if (whitelist.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(helmet());
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
+
 app.use(morgan("dev")); // use "combined" for production logging
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (request, response) => {
-  response.send("Hello, Express!");
+  response.send("Server running!");
 });
 
 // Routes
