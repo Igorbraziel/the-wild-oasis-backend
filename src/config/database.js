@@ -5,12 +5,11 @@ dotenv.config();
 
 const sequelize = new Sequelize(process.env.POSTGRES_URL, {
   dialect: "postgres",
-  logging: false, // Set to console.log to see executed SQL queries
+  logging: false, 
   dialectOptions: {
-    // This is needed for Neon, as it requires a secure connection
     ssl: {
       require: true,
-      rejectUnauthorized: false, // This may be needed for development
+      rejectUnauthorized: false, 
     },
   },
 });
