@@ -17,16 +17,13 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 8000;
 
-const whitelist = [
-  process.env.FRONTEND_DEVELOPMENT_URL,
-  process.env.FRONTEND_PRODUCTION_URL,
-];
+const whitelist = [process.env.FRONTEND_PRODUCTION_URL];
 
 //Middleware
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (whitelist.indexOf(origin) !== -1) {
+      if (whitelist.indexOf(origin) !== -1 || !origin) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
@@ -38,7 +35,9 @@ app.use(
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
-app.use(process.env.NODE_ENV === "production" ? morgan("combined") : morgan("dev"));
+app.use(
+  process.env.NODE_ENV === "production" ? morgan("combined") : morgan("dev")
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -55,8 +54,8 @@ app.use("/api/settings", settingsRoutes);
 // --- Sync Database and Start Server ---
 const startServer = async () => {
   try {
-    connectDB();
-    await db.sequelize.sync({ alter: true })
+    await connectDB();
+    await db.sequelize.sync();
     console.log("Database connection established.");
     app.listen(port, () => {
       console.log(`Server is listening on port ${port}`);
