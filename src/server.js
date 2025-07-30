@@ -45,6 +45,10 @@ app.get("/", (request, response) => {
   response.send("Server running!");
 });
 
+app.get("/healthcheck", (req, res) => {
+  res.status(200).send("OK")
+})
+
 // Routes
 app.use("/api/cabins", cabinsRoutes);
 app.use("/api/bookings", bookingsRoutes);
